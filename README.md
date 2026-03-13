@@ -1,4 +1,4 @@
-# 🔬 AI B2B Product Deep Research Skill
+# 🔬 AI Product Deep Research Skill
 
 > Turn any AI assistant into a professional product growth researcher.  
 > 让任何 AI 助手变成专业的产品增长研究员。
@@ -7,7 +7,7 @@
 
 ## What is this?
 
-A **reusable AI skill** (prompt engineering framework) that helps AI startup founders systematically study how successful AI B2B products grew — especially their **early-stage decisions**, **seed user acquisition**, and **path to PMF**.
+A **reusable AI skill** (prompt engineering framework) that helps AI startup founders systematically study how successful AI products grew — especially their **early-stage decisions**, **seed user acquisition**, and **path to PMF**.
 
 这是一套 **可复用的 AI 技能**（提示词工程框架），帮助 AI 初创团队系统化学习成功 AI B2B 产品的增长经验——特别是**早期决策**、**种子用户获取**和**找到 PMF 的过程**。
 
