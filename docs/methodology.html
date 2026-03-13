@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI B2B 产品深度调研方法论 v2.1</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: #A29BFE;
+            --primary-dark: #4834D4;
+            --accent: #00CEC9;
+            --accent-light: #E0FFFE;
+            --dark: #0D1117;
+            --dark-2: #161B22;
+            --dark-3: #21262D;
+            --text: #C9D1D9;
+            --text-bright: #F0F6FC;
+            --text-muted: #8B949E;
+            --border: #30363D;
+            --success: #3FB950;
+            --warning: #D29922;
+            --danger: #F85149;
+            --info: #58A6FF;
+            --orange: #F0883E;
+            --pink: #DB61A2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            line-height: 1.75;
+            font-size: 15px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        @media print {
+            body { background: white; color: #1a1a1a; font-size: 12px; }
+            .no-print { display: none !important; }
+            .page { max-width: 100%; box-shadow: none; border: none; }
+            .section { page-break-inside: avoid; }
+            h2 { page-break-before: always; }
+            :root {
+                --dark: #ffffff; --dark-2: #f8f8f8; --dark-3: #f0f0f0;
+                --text: #333333; --text-bright: #111111; --text-muted: #666666;
+                --border: #e0e0e0;
+            }
+        }
+
+        /* Top Bar */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(13,17,23,0.92); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .top-bar-title {
+            font-size: 14px; font-weight: 600; color: var(--text-bright);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .top-bar-title .badge {
+            background: var(--primary); color: white; padding: 2px 10px;
+            border-radius: 10px; font-size: 11px; font-weight: 500;
+        }
+        .top-bar-actions { display: flex; gap: 8px; }
+        .btn {
+            padding: 6px 16px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 13px; font-weight: 500; cursor: pointer;
+            font-family: inherit; transition: all 0.2s;
+        }
+        .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-ghost { background: transparent; color: var(--text); }
+        .btn-ghost:hover { background: var(--dark-3); color: var(--text-bright); }
+
+        /* Page */
+        .page {
+            max-width: 900px; margin: 64px auto 80px; padding: 0 32px;
+        }
+
+        /* Cover */
+        .cover {
+            text-align: center; padding: 80px 0 60px;
+            border-bottom: 1px solid var(--border); margin-bottom: 48px;
+        }
+        .cover-icon { font-size: 64px; margin-bottom: 24px; }
+        .cover h1 {
+            font-family: 'Noto Serif SC', serif; font-size: 38px;
+            font-weight: 700; color: var(--text-bright); line-height: 1.3;
+            margin-bottom: 12px;
+        }
+        .cover h1 span { color: var(--primary-light); }
+        .cover .subtitle {
+            font-size: 18px; color: var(--text-muted); font-weight: 300;
+            max-width: 600px; margin: 0 auto 32px;
+        }
+        .cover .version-info {
+            display: inline-flex; gap: 24px; font-size: 13px; color: var(--text-muted);
+        }
+        .cover .version-info span { display: flex; align-items: center; gap: 6px; }
+
+        /* Intro Box */
+        .intro-box {
+            background: linear-gradient(135deg, rgba(108,92,231,0.1), rgba(0,206,201,0.1));
+            border: 1px solid rgba(108,92,231,0.3); border-radius: 16px;
+            padding: 32px; margin-bottom: 48px;
+        }
+        .intro-box h3 {
+            color: var(--primary-light); font-size: 18px; margin-bottom: 12px;
+        }
+        .intro-box p { color: var(--text); font-size: 15px; }
+
+        /* Section */
+        .section { margin-bottom: 56px; }
+        h2 {
+            font-family: 'Noto Serif SC', serif; font-size: 26px;
+            color: var(--text-bright); margin-bottom: 8px; padding-top: 16px;
+        }
+        h2 .num {
+            color: var(--primary-light); font-family: 'JetBrains Mono', monospace;
+            font-size: 16px; margin-right: 8px;
+        }
+        .section-line {
+            width: 48px; height: 3px; background: var(--primary);
+            border-radius: 2px; margin: 10px 0 24px;
+        }
+        h3 {
+            font-size: 19px; color: var(--text-bright); margin: 32px 0 14px;
+            padding-left: 14px; border-left: 3px solid var(--primary);
+        }
+        h4 {
+            font-size: 15px; font-weight: 600; color: var(--accent);
+            margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        p { margin-bottom: 14px; }
+        strong { color: var(--text-bright); }
+
+        /* Dimension Card */
+        .dim-card {
+            background: var(--dark-2); border: 1px solid var(--border);
+            border-radius: 12px; padding: 28px; margin: 20px 0;
+            position: relative; overflow: hidden;
+        }
+        .dim-card::before {
+            content: ''; position: absolute; top: 0; left: 0;
+            width: 4px; height: 100%; border-radius: 4px 0 0 4px;
+        }
+        .dim-card.purple::before { background: var(--primary); }
+        .dim-card.teal::before { background: var(--accent); }
+        .dim-card.orange::before { background: var(--orange); }
+        .dim-card.pink::before { background: var(--pink); }
+        .dim-card.blue::before { background: var(--info); }
+        .dim-card.green::before { background: var(--success); }
+        .dim-card.yellow::before { background: var(--warning); }
+
+        .dim-header {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+        }
+        .dim-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+        }
+        .dim-card.purple .dim-icon { background: rgba(108,92,231,0.15); }
+        .dim-card.teal .dim-icon { background: rgba(0,206,201,0.15); }
+        .dim-card.orange .dim-icon { background: rgba(240,136,62,0.15); }
+        .dim-card.pink .dim-icon { background: rgba(219,97,162,0.15); }
+        .dim-card.blue .dim-icon { background: rgba(88,166,255,0.15); }
+        .dim-card.green .dim-icon { background: rgba(63,185,80,0.15); }
+        .dim-card.yellow .dim-icon { background: rgba(210,153,34,0.15); }
+
+        .dim-title { font-size: 17px; font-weight: 700; color: var(--text-bright); }
+        .dim-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Question List */
+        .q-list { list-style: none; margin: 16px 0; }
+        .q-list li {
+            padding: 10px 16px; margin: 6px 0; background: var(--dark-3);
+            border-radius: 8px; font-size: 14px; display: flex; gap: 10px;
+            border: 1px solid transparent; transition: border-color 0.2s;
+        }
+        .q-list li:hover { border-color: var(--border); }
+        .q-num {
+            color: var(--primary-light); font-family: 'JetBrains Mono', monospace;
+            font-size: 12px; font-weight: 600; min-width: 24px; padding-top: 2px;
+        }
+
+        /* Method Tag */
+        .method-row {
+            display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0;
+        }
+        .method-tag {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
+        }
+        .method-tag.search { background: rgba(88,166,255,0.12); color: var(--info); }
+        .method-tag.interview { background: rgba(108,92,231,0.12); color: var(--primary-light); }
+        .method-tag.data { background: rgba(63,185,80,0.12); color: var(--success); }
+        .method-tag.archive { background: rgba(240,136,62,0.12); color: var(--orange); }
+        .method-tag.social { background: rgba(219,97,162,0.12); color: var(--pink); }
+
+        /* Funnel */
+        .funnel { margin: 20px 0; }
+        .funnel-step {
+            background: var(--dark-3); border: 1px solid var(--border);
+            border-radius: 10px; padding: 20px 24px; margin: 8px 0;
+            display: flex; gap: 16px; align-items: flex-start;
+            transition: transform 0.2s;
+        }
+        .funnel-step:hover { transform: translateX(4px); }
+        .funnel-num {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--primary); color: white; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; flex-shrink: 0;
+        }
+        .funnel-content h5 {
+            font-size: 15px; color: var(--text-bright); margin-bottom: 4px;
+        }
+        .funnel-content p { font-size: 13.5px; color: var(--text-muted); margin: 0; }
+        .funnel-arrow {
+            text-align: center; color: var(--primary-light); font-size: 18px;
+            margin: 2px 0; opacity: 0.5;
+        }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+        thead th {
+            background: var(--dark-3); color: var(--text-bright); padding: 12px 16px;
+            text-align: left; font-weight: 600; font-size: 13px;
+            border-bottom: 2px solid var(--primary);
+        }
+        tbody td {
+            padding: 12px 16px; border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+        tbody tr:hover { background: rgba(108,92,231,0.05); }
+
+        /* Code Block */
+        .code-block {
+            background: var(--dark-2); border: 1px solid var(--border);
+            border-radius: 10px; padding: 20px 24px; margin: 16px 0;
+            font-family: 'JetBrains Mono', monospace; font-size: 13px;
+            line-height: 1.7; color: var(--text); white-space: pre;
+            overflow-x: auto;
+        }
+        .code-block .comment { color: var(--text-muted); }
+        .code-block .keyword { color: var(--primary-light); }
+        .code-block .string { color: var(--success); }
+        .code-block .accent { color: var(--accent); }
+
+        /* Callout */
+        .callout {
+            border-radius: 10px; padding: 18px 22px; margin: 16px 0;
+            border: 1px solid;
+        }
+        .callout.tip {
+            background: rgba(0,206,201,0.06); border-color: rgba(0,206,201,0.2);
+        }
+        .callout.tip strong { color: var(--accent); }
+        .callout.warn {
+            background: rgba(210,153,34,0.06); border-color: rgba(210,153,34,0.2);
+        }
+        .callout.warn strong { color: var(--warning); }
+        .callout.important {
+            background: rgba(108,92,231,0.06); border-color: rgba(108,92,231,0.2);
+        }
+        .callout.important strong { color: var(--primary-light); }
+        .callout p { margin: 0; font-size: 14px; }
+
+        /* Checklist */
+        .checklist { list-style: none; margin: 16px 0; }
+        .checklist li {
+            padding: 8px 0 8px 28px; position: relative; font-size: 14px;
+            border-bottom: 1px solid rgba(48,54,61,0.5);
+        }
+        .checklist li::before {
+            content: '☐'; position: absolute; left: 0; color: var(--primary-light);
+            font-size: 16px;
+        }
+        .checklist li:last-child { border-bottom: none; }
+
+        /* Priority */
+        .priority-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0;
+        }
+        .priority-card {
+            background: var(--dark-2); border: 1px solid var(--border);
+            border-radius: 10px; padding: 20px;
+        }
+        .priority-card h5 {
+            font-size: 13px; color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 12px;
+        }
+        .priority-card.t1 { border-top: 3px solid var(--success); }
+        .priority-card.t1 h5 { color: var(--success); }
+        .priority-card.t2 { border-top: 3px solid var(--warning); }
+        .priority-card.t2 h5 { color: var(--warning); }
+        .priority-card.t3 { border-top: 3px solid var(--text-muted); }
+
+        .priority-card ul { list-style: none; font-size: 13px; }
+        .priority-card ul li {
+            padding: 4px 0; padding-left: 18px; position: relative;
+        }
+        .priority-card ul li::before {
+            content: '›'; position: absolute; left: 4px; color: var(--text-muted);
+        }
+
+        /* Scoring */
+        .score-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 0; border-bottom: 1px solid var(--border);
+        }
+        .score-label { flex: 1; font-size: 14px; }
+        .score-bar-bg {
+            width: 200px; height: 8px; background: var(--dark-3);
+            border-radius: 4px; overflow: hidden;
+        }
+        .score-bar {
+            height: 100%; border-radius: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+        .score-value {
+            font-family: 'JetBrains Mono', monospace; font-size: 14px;
+            font-weight: 600; color: var(--text-bright); min-width: 40px;
+            text-align: right;
+        }
+
+        /* Report Template Outline */
+        .outline { margin: 16px 0; }
+        .outline-item {
+            display: flex; gap: 12px; padding: 10px 16px; margin: 4px 0;
+            border-radius: 8px; font-size: 14px; transition: background 0.2s;
+        }
+        .outline-item:hover { background: var(--dark-3); }
+        .outline-chapter {
+            font-family: 'JetBrains Mono', monospace; color: var(--primary-light);
+            font-size: 12px; font-weight: 600; min-width: 32px; padding-top: 2px;
+        }
+        .outline-title { color: var(--text-bright); font-weight: 500; }
+        .outline-desc { color: var(--text-muted); font-size: 13px; margin-top: 2px; }
+        .outline-sub {
+            padding-left: 44px; font-size: 13px; color: var(--text-muted);
+            padding-top: 4px; padding-bottom: 4px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center; padding: 40px 0; margin-top: 48px;
+            border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page { padding: 0 16px; }
+            .cover h1 { font-size: 28px; }
+            .priority-grid { grid-template-columns: 1fr; }
+            .score-bar-bg { width: 120px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar no-print">
+    <div class="top-bar-title">
+        🔬 AI B2B 产品深度调研方法论
+        <span class="badge">v2.1</span>
+    </div>
+    <div class="top-bar-actions">
+        <button class="btn btn-ghost" onclick="saveAsHTML()">💾 保存 HTML</button>
+        <button class="btn btn-primary" onclick="window.print()">📄 导出 PDF</button>
+    </div>
+</div>
+
+<div class="page">
+
+<!-- ========== COVER ========== -->
+<div class="cover">
+    <div class="cover-icon">🔬</div>
+    <h1>AI B2B 产品<span>深度调研</span>方法论</h1>
+    <p class="subtitle">一套可复用的框架，帮助 AI 初创团队系统化学习成功产品的早期增长经验</p>
+    <div class="version-info">
+        <span>📋 版本 2.1</span>
+        <span>📅 2026 年 3 月</span>
+        <span>🎯 面向 AI 初创团队</span>
+    </div>
+</div>
+
+<!-- ========== INTRO ========== -->
+<div class="intro-box">
+    <h3>🎯 这套方法论解决什么问题？</h3>
+    <p>当你想深度研究一个成功的 AI B2B 产品（如 Clay、Cursor、Perplexity、v0 等）时，你不只是需要"发生了什么"，更需要理解<strong>"为什么会这样"</strong>——创始人在每个关键节点做了什么决策、放弃了什么、种子用户从哪来、PMF 是怎么一步步找到的。这套方法论将调研过程从"随意搜索"升级为<strong>"系统化的产品增长诊断"</strong>，确保每份报告都能产出可复用的创业洞察。</p>
+</div>
+
+<!-- ========== SECTION 1: 七大调研维度 ========== -->
+<div class="section" id="s1">
+    <h2><span class="num">01</span> 八大核心调研维度</h2>
+    <div class="section-line"></div>
+    <p>每研究一个产品，都必须从这 8 个维度进行深度挖掘。不是每个维度都能找到完整信息，但框架确保你<strong>不会遗漏关键角度</strong>。</p>
+
+    <!-- Dimension 1 -->
+    <div class="dim-card purple">
+        <div class="dim-header">
+            <div class="dim-icon">🧠</div>
+            <div>
+                <div class="dim-title">维度一：创始人心理学与决策进化</div>
+                <div class="dim-subtitle">WHY — 理解决策背后的心理动因</div>
+            </div>
+        </div>
+        <p>大多数案例研究只告诉你"他们做了什么"，但真正有价值的是<strong>"为什么做这个决定、当时的心理状态是什么"</strong>。创始人的性格会被公司放大，直接影响产品走向。</p>
+        <h4>必须挖掘的问题</h4>
+        <ul class="q-list">
+            <li><span class="q-num">Q1</span> 创始人的过往经历（第几次创业？之前失败/成功的教训？）</li>
+            <li><span class="q-num">Q2</span> 创始人的性格特质如何影响了公司决策？</li>
+            <li><span class="q-num">Q3</span> 产品方向调整时，创始人经历了什么心理博弈？</li>
+            <li><span class="q-num">Q4</span> 最艰难的时刻是什么？如何撑过去的？</li>
+            <li><span class="q-num">Q5</span> 做出"缩小 ICP"或"放弃大市场"这类反直觉决策时，内心的对话是什么？</li>
+            <li><span class="q-num">Q6</span> 如果重来一次，最想改变什么？</li>
+        </ul>
+        <h4>信息获取方法</h4>
+        <div class="method-row">
+            <span class="method-tag interview">🎙 创始人播客访谈</span>
+            <span class="method-tag search">🔍 Founder Letter / 博客自省</span>
+            <span class="method-tag social">📱 Twitter/LinkedIn 早期发文</span>
+        </div>
+        <div class="callout tip">
+            <p><strong>💡 Clay 案例参考：</strong>Kareem Amin 坦言自己的"细节执念"既是产品打磨的优势，也曾拖慢团队速度。正是对这种性格特质的自我认知，才让他在 2020 年做出"大幅收窄 ICP"这个看似退缩但实际增值的决策。</p>
+        </div>
+    </div>
+
+    <!-- Dimension 2 -->
+    <div class="dim-card teal">
+        <div class="dim-header">
+            <div class="dim-icon">🎯</div>
+            <div>
+                <div class="dim-title">维度二：ICP 聚焦的递进过程</div>
+                <div class="dim-subtitle">WHO — 目标客户是如何一步步明确的</div>
+            </div>
+        </div>
+        <p>成功产品的 ICP 几乎都不是一开始就清晰的，而是经历<strong>「宽 → 窄 → 深 → 再扩展」</strong>的递进过程。理解每一次调整的触发点，比知道最终 ICP 是谁更有价值。</p>
+        <h4>必须挖掘的问题</h4>
+        <ul class="q-list">
+            <li><span class="q-num">Q7</span> 产品经历了几次 ICP 调整？每次的具体变化是什么？</li>
+            <li><span class="q-num">Q8</span> 每次调整的触发点：是数据驱动？用户反馈？还是创始人直觉？</li>
+            <li><span class="q-num">Q9</span> 从宽到窄的过程中，放弃了哪些"看起来很大"的机会？</li>
+            <li><span class="q-num">Q10</span> 什么时候开始从"窄"反向扩展？触发因素是什么？</li>
+            <li><span class="q-num">Q11</span> 不同时期的官网首页文案如何变化？（用 Wayback Machine 对比）</li>
+        </ul>
+        <h4>信息获取方法</h4>
+        <div class="method-row">
+            <span class="method-tag archive">📦 Wayback Machine 官网对比</span>
+            <span class="method-tag search">🔍 不同时期融资新闻稿措辞</span>
+            <span class="method-tag data">📊 Product Hunt 发布定位变化</span>
+        </div>
+    </div>
+
+    <!-- Dimension 3 -->
+    <div class="dim-card orange">
+        <div class="dim-header">
+            <div class="dim-icon">🌱</div>
+            <div>
+                <div class="dim-title">维度三：种子用户获取的全过程还原</div>
+                <div class="dim-subtitle">HOW — 第一批用户到底从哪来的</div>
+            </div>
+        </div>
+        <p>这是 AI 初创团队<strong>最想知道</strong>的部分。不是泛泛的"社群运营"，而是要还原到<strong>具体的动作、具体的数字、具体的故事</strong>。</p>
+
+        <h4>四层种子用户漏斗模型</h4>
+        <div class="funnel">
+            <div class="funnel-step">
+                <div class="funnel-num">1</div>
+                <div class="funnel-content">
+                    <h5>社群渗透 Community Infiltration</h5>
+                    <p>创始人去了哪些社群？怎么建立信任的？用了多长时间？是主动提供价值还是推销产品？</p>
+                </div>
+            </div>
+            <div class="funnel-arrow">↓</div>
+            <div class="funnel-step">
+                <div class="funnel-num">2</div>
+                <div class="funnel-content">
+                    <h5>超级节点撬动 Power Node Activation</h5>
+                    <p>是否找到了社群中的"超级连接者"？如何拉拢的——返佣？邀请入伙？给顾问身份？这个人带来了多少客户？</p>
+                </div>
+            </div>
+            <div class="funnel-arrow">↓</div>
+            <div class="funnel-step">
+                <div class="funnel-num">3</div>
+                <div class="funnel-content">
+                    <h5>高密度转化 High-Touch Conversion</h5>
+                    <p>早期的演示/转化方式是什么？是传统 demo 还是反向演示？转化率多少？需要几次接触才能成交？</p>
+                </div>
+            </div>
+            <div class="funnel-arrow">↓</div>
+            <div class="funnel-step">
+                <div class="funnel-num">4</div>
+                <div class="funnel-content">
+                    <h5>社区锁定 Community Lock-in</h5>
+                    <p>是否创建了用户社区？什么形式（Slack/Discord/微信群）？增长曲线如何？社区承担了哪些角色（支持/反馈/内容/传播）？</p>
+                </div>
+            </div>
+        </div>
+
+        <h4>必须挖掘的问题</h4>
+        <ul class="q-list">
+            <li><span class="q-num">Q12</span> 第一个付费客户的完整故事：谁？怎么知道产品的？为什么付费？</li>
+            <li><span class="q-num">Q13</span> 前 10 个客户 vs 前 100 个客户，获取渠道有什么变化？</li>
+            <li><span class="q-num">Q14</span> 早期获客成本（CAC）和转化率是多少？如何变化的？</li>
+            <li><span class="q-num">Q15</span> 是否有"超级节点"人物？具体是谁？带来了什么量级的效果？</li>
+            <li><span class="q-num">Q16</span> 从第 1 个用户到前 100 个用户，用了多久？</li>
+            <li><span class="q-num">Q17</span> 种子用户的画像是什么？（行业/公司规模/职位/痛点）</li>
+            <li><span class="q-num">Q18</span> 种子用户中，有多少人后来成为了产品的"布道者"？</li>
+        </ul>
+        <h4>信息获取方法</h4>
+        <div class="method-row">
+            <span class="method-tag interview">🎙 创始人早期访谈</span>
+            <span class="method-tag social">📱 早期用户的 LinkedIn/Twitter 发文</span>
+            <span class="method-tag search">🔍 社群邀请链接追溯</span>
+            <span class="method-tag data">📊 Product Hunt 评论区分析</span>
+        </div>
+    </div>
+
+    <!-- Dimension 4 -->
+    <div class="dim-card pink">
+        <div class="dim-header">
+            <div class="dim-icon">🔄</div>
+            <div>
+                <div class="dim-title">维度四：PMF 发现之旅（多次迭代）</div>
+                <div class="dim-subtitle">WHEN — PMF 不是一个时刻，而是一个过程</div>
+            </div>
+        </div>
+        <p>PMF 几乎从来不是一次性找到的。成功产品通常经历 <strong>2-4 次重大定位调整</strong>。要像拍纪录片一样还原每次转折。</p>
+
+        <h4>PMF 迭代追踪表（每个产品必填）</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>阶段</th>
+                    <th>时间</th>
+                    <th>产品定位</th>
+                    <th>目标客户</th>
+                    <th>关键指标</th>
+                    <th>触发下次调整的原因</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>探索期</strong></td>
+                    <td>年-年</td>
+                    <td>（填写）</td>
+                    <td>（填写）</td>
+                    <td>收入/用户数</td>
+                    <td>（什么信号促使了转变）</td>
+                </tr>
+                <tr>
+                    <td><strong>初步 PMF</strong></td>
+                    <td>年-年</td>
+                    <td>（填写）</td>
+                    <td>（填写）</td>
+                    <td>收入/用户数</td>
+                    <td>（填写）</td>
+                </tr>
+                <tr>
+                    <td><strong>真正 PMF</strong></td>
+                    <td>年-年</td>
+                    <td>（填写）</td>
+                    <td>（填写）</td>
+                    <td>收入/用户数</td>
+                    <td>（填写）</td>
+                </tr>
+                <tr>
+                    <td><strong>规模化</strong></td>
+                    <td>年-至今</td>
+                    <td>（填写）</td>
+                    <td>（填写）</td>
+                    <td>收入/用户数</td>
+                    <td>—</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>必须挖掘的问题</h4>
+        <ul class="q-list">
+            <li><span class="q-num">Q19</span> 产品经历了几次大的定位调整？各阶段的产品名/tagline 是什么？</li>
+            <li><span class="q-num">Q20</span> 每次调整是主动发现还是被动调整（被市场逼的）？</li>
+            <li><span class="q-num">Q21</span> 什么时刻你明确感觉到了 PMF？具体的量化信号是什么？</li>
+            <li><span class="q-num">Q22</span> 有没有某个用户反馈或数据特别关键，直接改变了产品方向？</li>
+            <li><span class="q-num">Q23</span> 从"有一定用户"到"快速增长"的临界点在哪里？发生了什么？</li>
+            <li><span class="q-num">Q24</span> 是否考虑过彻底放弃？最坚持的理由是什么？</li>
+        </ul>
+    </div>
+
+    <!-- Dimension 5 -->
+    <div class="dim-card blue">
+        <div class="dim-header">
+            <div class="dim-icon">💰</div>
+            <div>
+                <div class="dim-title">维度五：定价模型设计与迭代</div>
+                <div class="dim-subtitle">PRICING — 定价就是定位，定价就是增长杠杆</div>
+            </div>
+        </div>
+        <p>定价不只是一个数字，它反映了公司对自身价值的理解、对客户心理的把握，以及对增长模式的选择。</p>
+        <h4>必须挖掘的问题</h4>
+        <ul class="q-list">
+            <li><span class="q-num">Q25</span> 初始定价是怎么决定的？参考了哪些竞品？</li>
+            <li><span class="q-num">Q26</span> 按席位 vs 按用量 vs 按结果？为什么选择这种模式？</li>
+            <li><span class="q-num">Q27</span> 定价有没有调整过？调整逻辑是什么？效果如何？</li>
+            <li><span class="q-num">Q28</span> 是否提供免费试用？试用到付费的转化率是多少？</li>
+            <li><span class="q-num">Q29</span> 定价对内部推广（Expansion Revenue）有什么影响？</li>
+        </ul>
+    </div>
+
+    <!-- Dimension 6 -->
+    <div class="dim-card green">
+        <div class="dim-header">
+            <div class="dim-icon">📣</div>
+            <div>
+                <div class="dim-title">维度六：营销飞轮 — 品牌 × 内容 × 社区</div>
+                <div class="dim-subtitle">GROWTH — 增长引擎是怎么转起来的</div>
+            </div>
+        </div>
+        <p>不是所有渠道都有效。重要的是找到哪个渠道是核心杠杆，以及<strong>多个渠道如何互相增强形成飞轮</strong>。</p>
+        <h4>必须挖掘的问题</h4>
+        <ul class="q-list">
+            <li><span class="q-num">Q30</span> 尝试过哪些渠道？各自效果如何？最终聚焦在哪个？</li>
+            <li><span class="q-num">Q31</span> 品牌投入从什么时候开始？占比多少？ROI 怎么衡量？</li>
+            <li><span class="q-num">Q32</span> 内容最有效的形式是什么？生产频率和复用机制？</li>
+            <li><span class="q-num">Q33</span> 是"公司自己做内容"还是"让客户为你做内容"？具体机制是什么？</li>
+            <li><span class="q-num">Q34</span> 社区在增长中扮演什么角色？是获客还是留存？还是两者？</li>
+        </ul>
+
+        <h4>渠道效果评估模板</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>渠道</th>
+                    <th>效果评级</th>
+                    <th>投入程度</th>
+                    <th>核心作用</th>
+                    <th>是否长期保留</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>LinkedIn 内容</td><td>（★☆☆☆☆ 到 ★★★★★）</td><td>（高/中/低）</td><td>（获客/留存/品牌）</td><td>（是/否）</td></tr>
+                <tr><td>SEO</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>付费广告</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>邮件营销</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>社区运营</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>线下活动</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>PR/媒体</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>口碑/推荐</td><td></td><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Dimension 7: Competitive Differentiation (NEW) -->
+    <div class="dim-card yellow">
+        <div class="dim-header">
+            <div class="dim-icon">⚔️</div>
+            <div>
+                <div class="dim-title">维度七：竞品差异化与反定位策略</div>
+                <div class="dim-subtitle">COMPETE — 面对竞品时，他们做了什么不同的选择</div>
+            </div>
+        </div>
+        <p>这个维度回答的核心问题是：<strong>"当竞品已经存在时，客户为什么还是选了这个产品？"</strong> 不是简单列出竞品功能对比，而是深挖每一个差异化选择背后的战略逻辑。</p>
+
+        <h4>五层竞争护城河分析模型</h4>
+        <div class="funnel">
+            <div class="funnel-step">
+                <div class="funnel-num">1</div>
+                <div class="funnel-content">
+                    <h5>竞争格局绘制 Landscape Mapping</h5>
+                    <p>谁是直接/间接竞品？各自何时入场？市场如何区分它们？客户的"旧方案"（用这个产品之前怎么解决问题的）是什么？</p>
+                </div>
+            </div>
+            <div class="funnel-arrow">↓</div>
+            <div class="funnel-step">
+                <div class="funnel-num">2</div>
+                <div class="funnel-content">
+                    <h5>反定位分析 Counter-Positioning</h5>
+                    <p>这个产品<strong>刻意不做</strong>竞品在做的什么事？拒绝了哪些"行业标准"做法？为什么这种"反常规"选择反而成为了优势？</p>
+                </div>
+            </div>
+            <div class="funnel-arrow">↓</div>
+            <div class="funnel-step">
+                <div class="funnel-num">3</div>
+                <div class="funnel-content">
+                    <h5>"为什么切换"故事 Why-Switch Story</h5>
+                    <p>从竞品切换过来的客户——触发切换的事件是什么？产品体验中的 "aha moment" 是什么？客户离开的 #1 原因（几乎从来不是"功能更多"）？</p>
+                </div>
+            </div>
+            <div class="funnel-arrow">↓</div>
+            <div class="funnel-step">
+                <div class="funnel-num">4</div>
+                <div class="funnel-content">
+                    <h5>竞争应对剧本 Competitive Response Playbook</h5>
+                    <p>当竞品抄袭了关键功能或进入了同一赛道，公司如何应对？忽略？加倍差异化？还是调整方向？内部决策过程是什么？</p>
+                </div>
+            </div>
+            <div class="funnel-arrow">↓</div>
+            <div class="funnel-step">
+                <div class="funnel-num">5</div>
+                <div class="funnel-content">
+                    <h5>护城河构建 Moat Construction</h5>
+                    <p>现在让这个产品难以被替代的是什么？分类护城河类型：网络效应（社区/生态/集成）· 切换成本（数据锁定/工作流依赖）· 品牌（信任/口碑/情感连接）· 规模效应（数据优势/成本结构）· 反定位（在位者抄了反而伤害自己）</p>
+                </div>
+            </div>
+        </div>
+
+        <h4>必须挖掘的问题</h4>
+        <ul class="q-list">
+            <li><span class="q-num">Q38</span> 前 3-5 个竞品是谁？市场如何区别看待它们？</li>
+            <li><span class="q-num">Q39</span> 这个产品出现之前，客户用什么"旧方案"解决同样的问题？</li>
+            <li><span class="q-num">Q40</span> 这个产品做了什么<strong>竞品做不到（或做不好）</strong>的事？</li>
+            <li><span class="q-num">Q41</span> 这个产品<strong>刻意不做</strong>竞品都在做的什么功能/策略？为什么？</li>
+            <li><span class="q-num">Q42</span> 从竞品切换过来的客户——#1 触发因素是什么？</li>
+            <li><span class="q-num">Q43</span> 产品体验中有没有一个竞品无法复制的 "aha moment"？</li>
+            <li><span class="q-num">Q44</span> 竞品推出类似功能时，公司怎么应对的？</li>
+            <li><span class="q-num">Q45</span> 已经构建了什么类型的护城河？（网络效应/切换成本/品牌/规模/反定位？）</li>
+            <li><span class="q-num">Q46</span> 竞品要真正威胁到这个产品的地位，需要做什么？需要多久？</li>
+            <li><span class="q-num">Q47</span> 这个产品是创造了新品类，还是在已有品类中竞争？</li>
+            <li><span class="q-num">Q48</span> 有没有增强竞争地位的生态合作或"联盟"？</li>
+        </ul>
+
+        <h4>竞品对比分析模板</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>维度</th>
+                    <th>本产品</th>
+                    <th>竞品 A</th>
+                    <th>竞品 B</th>
+                    <th>竞品 C</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>核心定位</strong></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td><strong>目标客户</strong></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td><strong>定价模式</strong></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td><strong>核心差异点</strong></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td><strong>刻意不做的事</strong></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td><strong>护城河类型</strong></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td><strong>客户切换成本</strong></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td><strong>融资阶段/估值</strong></td><td></td><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+
+        <h4>信息获取方法</h4>
+        <div class="method-row">
+            <span class="method-tag data">📊 G2/Capterra 对比评价</span>
+            <span class="method-tag search">🔍 "switched from X to Y" 搜索</span>
+            <span class="method-tag social">📱 Reddit/Twitter 用户讨论</span>
+            <span class="method-tag archive">📦 竞品官网定位变化追踪</span>
+        </div>
+
+        <div class="callout tip">
+            <p><strong>💡 Clay 案例参考：</strong>Clay 面对 Apollo、ZoomInfo、Lusha 等竞品时的差异化策略：(1) <strong>反定位</strong>——竞品按席位收费，Clay 按用量收费（竞品抄了会损害自己的收入模型）；(2) <strong>网络效应</strong>——11,000 人 Slack 社区是竞品无法复制的；(3) <strong>品牌护城河</strong>——全职粘土艺术家+原创设计让品牌记忆独一无二；(4) <strong>刻意不做</strong>——不做 CRM，只做数据层，这让 Clay 能和所有 CRM 集成而不是竞争。</p>
+        </div>
+    </div>
+
+    <!-- Dimension 8 -->
+    <div class="dim-card yellow" style="border-left-color: var(--warning);">
+        <div class="dim-header">
+            <div class="dim-icon">⚡</div>
+            <div>
+                <div class="dim-title">维度八：关键拐点事件识别</div>
+                <div class="dim-subtitle">INFLECTION — 哪些事件改变了增长曲线的斜率</div>
+            </div>
+        </div>
+        <p>每个成功产品都有 5-8 个<strong>关键拐点</strong>——不是渐进式改善，而是让增长曲线斜率突然改变的事件。识别这些拐点是调研的终极目标。</p>
+        <h4>必须挖掘的问题</h4>
+        <ul class="q-list">
+            <li><span class="q-num">Q35</span> 公司历史上有哪些"之前 vs 之后完全不同"的拐点事件？</li>
+            <li><span class="q-num">Q36</span> 每个拐点的触发条件是什么？是内部决策还是外部环境变化？</li>
+            <li><span class="q-num">Q37</span> 度过拐点需要什么准备？如果没准备好会怎样？</li>
+        </ul>
+
+        <h4>拐点记录模板</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>拐点</th>
+                    <th>时间</th>
+                    <th>事件描述</th>
+                    <th>触发条件</th>
+                    <th>拐点前指标</th>
+                    <th>拐点后指标</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>#1</td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>#2</td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>#3</td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>#4</td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>#5</td><td></td><td></td><td></td><td></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ========== SECTION 2: 信息源优先级 ========== -->
+<div class="section" id="s2">
+    <h2><span class="num">02</span> 信息源优先级体系</h2>
+    <div class="section-line"></div>
+    <p>不同类型的信息源可信度和价值差异巨大。按以下优先级搜索和引用：</p>
+
+    <div class="priority-grid">
+        <div class="priority-card t1">
+            <h5>🟢 Tier 1 · 核心来源</h5>
+            <ul>
+                <li>创始人/CEO 深度访谈（视频/文字）</li>
+                <li>First Round Review / YC 原创专访</li>
+                <li>官方融资新闻稿和财务数据</li>
+                <li>Product Hunt launch 讨论和评论</li>
+                <li>Crunchbase / PitchBook 数据</li>
+            </ul>
+        </div>
+        <div class="priority-card t2">
+            <h5>🟡 Tier 2 · 重要补充</h5>
+            <ul>
+                <li>创始人 Twitter/LinkedIn 发文轨迹</li>
+                <li>行业媒体深度报道</li>
+                <li>用户评价（G2/Capterra）</li>
+                <li>员工 LinkedIn 背景分析</li>
+                <li>竞品对比分析文章</li>
+            </ul>
+        </div>
+        <div class="priority-card t3">
+            <h5>⚪ Tier 3 · 辅助参考</h5>
+            <ul>
+                <li>二手转述类文章</li>
+                <li>播客访谈总结（非原始音频）</li>
+                <li>社交媒体讨论/评论</li>
+                <li>Wayback Machine 历史快照</li>
+                <li>第三方市场分析报告</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ========== SECTION 3: 37 问清单 ========== -->
+<div class="section" id="s3">
+    <h2><span class="num">03</span> 51 问深度调研清单</h2>
+    <div class="section-line"></div>
+    <p>每研究一个产品，尝试回答以下 51 个问题。<strong>不是每个问题都能找到答案</strong>，但尝试回答的过程会让你的理解深度远超普通案例研究。</p>
+
+    <h3>A. 创始人心理学（6 问）</h3>
+    <ul class="checklist">
+        <li>创始人之前有几次创业经历？失败/成功的教训是什么？</li>
+        <li>创始人的性格特征是什么？如何影响了产品方向？</li>
+        <li>从 idea 到第一个付费用户，花了多长时间？</li>
+        <li>最艰难的时刻是什么？如何度过的？</li>
+        <li>做出"收窄 ICP"等重大决策时，内心的博弈过程？</li>
+        <li>如果重来一次，最想改变什么？</li>
+    </ul>
+
+    <h3>B. 种子用户获取（7 问）</h3>
+    <ul class="checklist">
+        <li>第一个付费客户的完整故事：谁？怎么知道的？为什么付费？</li>
+        <li>前 100 个用户来自哪些渠道？各占比多少？</li>
+        <li>是否有"超级节点"人物？如何发现和拉拢的？</li>
+        <li>早期 CAC 和转化率？如何变化？</li>
+        <li>从第 1 个用户到前 100 个用户，用了多久？</li>
+        <li>种子用户的画像？（行业/规模/职位/核心痛点）</li>
+        <li>有多少种子用户后来成为了产品的"布道者"？</li>
+    </ul>
+
+    <h3>C. PMF 发现过程（6 问）</h3>
+    <ul class="checklist">
+        <li>产品经历了几次大的定位调整？各是什么？</li>
+        <li>每次调整的触发点：数据驱动？用户反馈？还是直觉？</li>
+        <li>什么时刻明确感到 PMF？量化信号是什么？</li>
+        <li>有没有某个用户反馈特别深刻，直接改变了方向？</li>
+        <li>从"有用户"到"快速增长"的临界点在哪？</li>
+        <li>是否考虑过放弃？最坚持的理由？</li>
+    </ul>
+
+    <h3>D. 定价与商业模式（5 问）</h3>
+    <ul class="checklist">
+        <li>初始定价怎么定的？参考了哪些竞品？</li>
+        <li>按席位 vs 按用量 vs 按结果？为什么这样选择？</li>
+        <li>定价有没有调整过？逻辑和效果？</li>
+        <li>是否提供免费试用？试用→付费转化率？</li>
+        <li>定价对 Expansion Revenue 有什么影响？</li>
+    </ul>
+
+    <h3>E. 品牌与内容增长（5 问）</h3>
+    <ul class="checklist">
+        <li>何时决定投入品牌建设？为什么？</li>
+        <li>品牌投入占营销预算多少？ROI 怎么衡量？</li>
+        <li>内容最有效的形式？生产频率和复用机制？</li>
+        <li>哪个社交媒体平台转化率最高？</li>
+        <li>是否有特别成功的内容案例？为什么成功？</li>
+    </ul>
+
+    <h3>F. 增长指标与拐点（5 问）</h3>
+    <ul class="checklist">
+        <li>关键增长指标有哪些？追踪频率？</li>
+        <li>爆发增长具体指什么指标？触发点是什么？</li>
+        <li>客户留存率（MRR Churn）是多少？</li>
+        <li>口碑传播系数（Viral Coefficient）有多高？</li>
+        <li>现在增长动力来自哪些渠道？（老客户扩展/新客户/代理商等）</li>
+    </ul>
+
+    <h3>G. AI 产品特有维度（3 问）</h3>
+    <ul class="checklist">
+        <li>底层用什么模型？模型迁移/升级的关键节点？</li>
+        <li>AI API 成本如何影响定价和毛利？</li>
+        <li>AI 能力是产品核心还是增强？对竞争格局的影响？</li>
+    </ul>
+
+    <h3>H. 竞品差异化与反定位（11 问）🆕</h3>
+    <ul class="checklist">
+        <li>前 3-5 个竞品是谁？市场如何区别看待它们？</li>
+        <li>这个产品出现之前，客户用什么"旧方案"解决同样的问题？</li>
+        <li>这个产品做了什么竞品做不到（或做不好）的事？</li>
+        <li>这个产品<strong>刻意不做</strong>竞品都在做的什么功能/策略？为什么？</li>
+        <li>从竞品切换过来的客户——#1 触发因素是什么？</li>
+        <li>产品体验中有没有一个竞品无法复制的 "aha moment"？</li>
+        <li>竞品推出类似功能时，公司怎么应对的？</li>
+        <li>已经构建了什么类型的护城河？（网络效应/切换成本/品牌/规模/反定位？）</li>
+        <li>竞品要真正威胁到这个产品的地位，需要做什么？需要多久？</li>
+        <li>这个产品是创造了新品类，还是在已有品类中竞争？</li>
+        <li>有没有增强竞争地位的生态合作或"联盟"？</li>
+    </ul>
+
+    <h3>I. 关键拐点（3 问）</h3>
+    <ul class="checklist">
+        <li>公司历史上有哪些"之前 vs 之后完全不同"的拐点事件？</li>
+        <li>每个拐点的触发条件：内部决策还是外部环境变化？</li>
+        <li>度过拐点需要什么准备？如果没准备好会怎样？</li>
+    </ul>
+</div>
+
+<!-- ========== SECTION 4: 报告模板结构 ========== -->
+<div class="section" id="s4">
+    <h2><span class="num">04</span> 标准报告模板（12 章结构）</h2>
+    <div class="section-line"></div>
+    <p>每份产品调研报告都应遵循以下结构，确保深度一致、可对比、可复用：</p>
+
+    <div class="outline">
+        <div class="outline-item">
+            <div class="outline-chapter">01</div>
+            <div>
+                <div class="outline-title">执行摘要 Executive Summary</div>
+                <div class="outline-desc">公司基本信息 · 核心成就 · 最关键的 3 个启发（一页看完全貌）</div>
+            </div>
+        </div>
+        <div class="outline-item">
+            <div class="outline-chapter">02</div>
+            <div>
+                <div class="outline-title">创始人档案与决策心理学</div>
+                <div class="outline-desc">背景经历 · 性格特质如何影响产品 · 关键决策点的心理分析</div>
+            </div>
+        </div>
+        <div class="outline-item">
+            <div class="outline-chapter">03</div>
+            <div>
+                <div class="outline-title">从 0 到 1：种子用户获取全解</div>
+                <div class="outline-desc">四层漏斗还原 · 第一批用户的故事 · 早期 CAC 和转化率 · 社区建设</div>
+            </div>
+        </div>
+        <div class="outline-item">
+            <div class="outline-chapter">04</div>
+            <div>
+                <div class="outline-title">PMF 发现之旅</div>
+                <div class="outline-desc">多次迭代追踪表 · 每次转折的触发点 · PMF 达成的量化信号</div>
+            </div>
+        </div>
+        <div class="outline-item">
+            <div class="outline-chapter">05</div>
+            <div>
+                <div class="outline-title">定价模型设计与创新</div>
+                <div class="outline-desc">定价策略演变 · 与竞品对比 · 对增长的影响</div>
+            </div>
+        </div>
+        <div class="outline-item">
+            <div class="outline-chapter">06</div>
+            <div>
+                <div class="outline-title">品牌与内容增长飞轮</div>
+                <div class="outline-desc">品牌投入 ROI · 内容复用闭环 · 各渠道转化率对比</div>
+            </div>
+        </div>
+        <div class="outline-item" style="background: rgba(210,153,34,0.08); border: 1px solid rgba(210,153,34,0.2); border-radius: 8px;">
+            <div class="outline-chapter" style="color: var(--warning);">07</div>
+            <div>
+                <div class="outline-title">⚔️ 竞品差异化与护城河分析 <span style="color:var(--warning);font-size:11px;font-weight:600;">NEW</span></div>
+                <div class="outline-desc">五层护城河模型 · 反定位策略 · "为什么切换"故事 · 竞品应对剧本 · 护城河类型分类</div>
+            </div>
+        </div>
+        <div class="outline-item">
+            <div class="outline-chapter">08</div>
+            <div>
+                <div class="outline-title">GTM 团队与组织进化</div>
+                <div class="outline-desc">关键岗位设置 · 招聘策略 · 从创始人驱动→系统化运营的转变</div>
+            </div>
+        </div>
+        <div class="outline-item">
+            <div class="outline-chapter">09</div>
+            <div>
+                <div class="outline-title">关键拐点深度解析</div>
+                <div class="outline-desc">5-8 个改变增长曲线斜率的事件 · 触发条件 · 前后量化对比</div>
+            </div>
+        </div>
+        <div class="outline-item">
+            <div class="outline-chapter">10</div>
+            <div>
+                <div class="outline-title">可复用启发与最佳实践</div>
+                <div class="outline-desc">8-10 个可直接借鉴的策略 · 每个都附具体操作步骤</div>
+            </div>
+        </div>
+        <div class="outline-item">
+            <div class="outline-chapter">11</div>
+            <div>
+                <div class="outline-title">竞品全景对比表</div>
+                <div class="outline-desc">定位矩阵图 · 功能/定价/护城河多维对比 · 市场格局预判</div>
+            </div>
+        </div>
+        <div class="outline-item">
+            <div class="outline-chapter">12</div>
+            <div>
+                <div class="outline-title">附录：关键数据一览</div>
+                <div class="outline-desc">时间线节点表 · 融资历程 · 增长指标时间序列 · 所有引用源链接</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== SECTION 5: 调研流程 ========== -->
+<div class="section" id="s5">
+    <h2><span class="num">05</span> 系统化调研流程（4 天法）</h2>
+    <div class="section-line"></div>
+
+    <div class="dim-card purple">
+        <div class="dim-header">
+            <div class="dim-icon">📚</div>
+            <div>
+                <div class="dim-title">Day 1：背景研究（2-3 小时）</div>
+                <div class="dim-subtitle">建立基本认知框架</div>
+            </div>
+        </div>
+        <ul class="checklist">
+            <li>搜索创始人深度访谈（First Round Review / YC / 播客）</li>
+            <li>查 Crunchbase 融资历史和关键投资人</li>
+            <li>浏览 Product Hunt launch 页面和评论</li>
+            <li>通读官方博客近 12 个月的文章标题（把握方向）</li>
+            <li>用 Wayback Machine 对比 3 个时期的官网首页</li>
+        </ul>
+    </div>
+
+    <div class="dim-card teal">
+        <div class="dim-header">
+            <div class="dim-icon">🔍</div>
+            <div>
+                <div class="dim-title">Day 2：深度挖掘（3-4 小时）</div>
+                <div class="dim-subtitle">填充 37 问清单</div>
+            </div>
+        </div>
+        <ul class="checklist">
+            <li>找到所有创始人的 Twitter/LinkedIn 发文（按时间排序）</li>
+            <li>搜索早期用户的社交媒体提及（"I just tried [product]"）</li>
+            <li>研究竞品的定位和定价对比</li>
+            <li>查找中英文深度分析文章（人人都是产品经理 / Substack / Medium）</li>
+            <li>关注播客访谈中的"失败""犹豫""后悔"关键词</li>
+        </ul>
+    </div>
+
+    <div class="dim-card orange">
+        <div class="dim-header">
+            <div class="dim-icon">📊</div>
+            <div>
+                <div class="dim-title">Day 3：数据补充（2-3 小时）</div>
+                <div class="dim-subtitle">量化验证和查漏补缺</div>
+            </div>
+        </div>
+        <ul class="checklist">
+            <li>整理增长数据时间线（用户数、ARR、融资额）</li>
+            <li>查 G2/Capterra 用户评价，提取关键主题</li>
+            <li>分析社区规模变化（Slack/Discord 成员数追踪）</li>
+            <li>对 37 问清单查漏补缺，标记无法获取的信息</li>
+        </ul>
+    </div>
+
+    <div class="dim-card green">
+        <div class="dim-header">
+            <div class="dim-icon">✍️</div>
+            <div>
+                <div class="dim-title">Day 4：分析与产出（4-5 小时）</div>
+                <div class="dim-subtitle">将信息转化为洞察</div>
+            </div>
+        </div>
+        <ul class="checklist">
+            <li>按 11 章报告结构组织内容</li>
+            <li>制作时间线可视化和 PMF 迭代表</li>
+            <li>提炼 5-8 个关键拐点</li>
+            <li>撰写 8-10 条可复用启发（每条附具体操作步骤）</li>
+            <li>生成最终 HTML 报告，检查数据准确性</li>
+        </ul>
+    </div>
+</div>
+
+<!-- ========== SECTION 6: 写作原则 ========== -->
+<div class="section" id="s6">
+    <h2><span class="num">06</span> 三大写作原则</h2>
+    <div class="section-line"></div>
+
+    <h3>原则一：故事化，不要数据堆砌</h3>
+    <div class="callout warn">
+        <p><strong>❌ 不要这样写：</strong>Clay 在 2022 年实现了 10 倍增长，ARR 从 300 万增长到 3000 万。</p>
+    </div>
+    <div class="callout tip">
+        <p><strong>✅ 要这样写：</strong>当 Kareem 决定把所有非 SDR 的用户场景全部砍掉时，团队里没人觉得这是个好主意。但 6 个月后，当社群里的代理商开始自发在 LinkedIn 发帖提及 Clay 时，他知道赌对了——客户数在接下来 3 个月从 120 跃升到 1,000+。</p>
+    </div>
+
+    <h3>原则二：因果链清晰，每个结果都追溯原因</h3>
+    <div class="callout warn">
+        <p><strong>❌ 不要这样写：</strong>Clay 做了社群运营、内容营销和品牌建设。</p>
+    </div>
+    <div class="callout tip">
+        <p><strong>✅ 要这样写：</strong>Clay 的内容增长不是"我们来写博客"，而是一个精心设计的系统——代理商客户发帖展示 Clay 用法 = 展示自己专业度 = 吸引自己客户。Clay 只需要帮他们把帖子写得更好。这就是为什么他们不需要内容团队也能有 100+ 个客户自发案例。</p>
+    </div>
+
+    <h3>原则三：可操作性，每个启发都有下一步</h3>
+    <div class="callout warn">
+        <p><strong>❌ 不要这样写：</strong>品牌建设很重要。</p>
+    </div>
+    <div class="callout tip">
+        <p><strong>✅ 要这样写：</strong>如果你的团队不到 30 人，现在就应该招一个兼任品牌+HR 的人（Clay 就是这么做的）。这个人的 KPI 不是"做出好看的网站"，而是"确保所有对外触点——从博客到招聘 JD 到 Slack 回复——都用同一个语气说话"。</p>
+    </div>
+</div>
+
+<!-- ========== SECTION 7: 报告评分标准 ========== -->
+<div class="section" id="s7">
+    <h2><span class="num">07</span> 报告质量评分标准</h2>
+    <div class="section-line"></div>
+    <p>每份报告完成后，用以下标准打分。<strong>70 分以上</strong>才算合格：</p>
+
+    <div class="score-row">
+        <div class="score-label"><strong>创始人洞察深度</strong> — 是否理解了决策背后的心理？</div>
+        <div class="score-bar-bg"><div class="score-bar" style="width:100%"></div></div>
+        <div class="score-value">/15</div>
+    </div>
+    <div class="score-row">
+        <div class="score-label"><strong>种子用户故事完整度</strong> — 是否清晰还原了第一批用户从哪来？</div>
+        <div class="score-bar-bg"><div class="score-bar" style="width:100%"></div></div>
+        <div class="score-value">/15</div>
+    </div>
+    <div class="score-row">
+        <div class="score-label"><strong>PMF 过程理解</strong> — 是否真正理解了为什么突然爆发增长？</div>
+        <div class="score-bar-bg"><div class="score-bar" style="width:80%"></div></div>
+        <div class="score-value">/12</div>
+    </div>
+    <div class="score-row">
+        <div class="score-label"><strong>⚔️ 竞品差异化深度</strong> — 是否讲清了"为什么客户不选竞品"？</div>
+        <div class="score-bar-bg"><div class="score-bar" style="width:87%"></div></div>
+        <div class="score-value">/13</div>
+    </div>
+    <div class="score-row">
+        <div class="score-label"><strong>数据精准性</strong> — 所有数据是否可追溯到一级来源？</div>
+        <div class="score-bar-bg"><div class="score-bar" style="width:80%"></div></div>
+        <div class="score-value">/12</div>
+    </div>
+    <div class="score-row">
+        <div class="score-label"><strong>可操作性</strong> — 其他创始人是否能直接复用这些启发？</div>
+        <div class="score-bar-bg"><div class="score-bar" style="width:87%"></div></div>
+        <div class="score-value">/13</div>
+    </div>
+    <div class="score-row">
+        <div class="score-label"><strong>可视化程度</strong> — 图表是否清晰、美观、有说服力？</div>
+        <div class="score-bar-bg"><div class="score-bar" style="width:67%"></div></div>
+        <div class="score-value">/10</div>
+    </div>
+    <div class="score-row">
+        <div class="score-label"><strong>故事性</strong> — 读起来是否像一部创业纪录片？</div>
+        <div class="score-bar-bg"><div class="score-bar" style="width:67%"></div></div>
+        <div class="score-value">/10</div>
+    </div>
+
+    <div class="callout important" style="margin-top: 24px;">
+        <p><strong>📊 总分 /100</strong> — 70 分合格，80 分良好，90 分以上为标杆级报告。每次调研完成后自评打分，持续迭代提升。</p>
+    </div>
+</div>
+
+<!-- ========== SECTION 8: 必备图表 ========== -->
+<div class="section" id="s8">
+    <h2><span class="num">08</span> 每份报告必备的 12 张图表</h2>
+    <div class="section-line"></div>
+
+    <table>
+        <thead>
+            <tr><th>#</th><th>图表名称</th><th>作用</th><th>对应维度</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>1</td><td><strong>完整时间线图</strong></td><td>一眼看清公司从创立到今天的完整演进</td><td>全局</td></tr>
+            <tr><td>2</td><td><strong>ICP 演变路径图</strong></td><td>展示目标客户从"宽"到"窄"再到"扩展"的过程</td><td>维度二</td></tr>
+            <tr><td>3</td><td><strong>种子用户四层漏斗</strong></td><td>还原第一批用户的获取过程</td><td>维度三</td></tr>
+            <tr><td>4</td><td><strong>PMF 迭代对比表</strong></td><td>并排对比 3-4 次定位调整的前后差异</td><td>维度四</td></tr>
+            <tr><td>5</td><td><strong>增长曲线图</strong></td><td>用户数 / MRR / ARR 的指数增长可视化</td><td>维度七</td></tr>
+            <tr><td>6</td><td><strong>渠道效果评估表</strong></td><td>各渠道的效果评级和 ROI 对比</td><td>维度六</td></tr>
+            <tr><td>7</td><td><strong>内容复用闭环图</strong></td><td>展示内容从创作到传播的完整链路</td><td>维度六</td></tr>
+            <tr><td>8</td><td><strong>定价演变对比</strong></td><td>定价策略的变化和与竞品对比</td><td>维度五</td></tr>
+            <tr><td>9</td><td><strong>⚔️ 竞品定位矩阵图</strong></td><td>以两个关键维度为轴，展示各竞品的市场位置</td><td>维度七</td></tr>
+            <tr><td>10</td><td><strong>⚔️ 五层护城河图</strong></td><td>展示已构建的护城河类型和深度</td><td>维度七</td></tr>
+            <tr><td>11</td><td><strong>拐点识别图</strong></td><td>5-8 个关键拐点的时间点和前后对比</td><td>维度八</td></tr>
+            <tr><td>12</td><td><strong>增长飞轮模型</strong></td><td>展示多个增长引擎如何互相增强</td><td>总结</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ========== SECTION 9: 已完成案例 ========== -->
+<div class="section" id="s9">
+    <h2><span class="num">09</span> 已完成调研案例索引</h2>
+    <div class="section-line"></div>
+    <p>用这套方法论完成的产品调研报告：</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>产品</th>
+                <th>赛道</th>
+                <th>估值</th>
+                <th>核心启发</th>
+                <th>报告文件</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Clay</strong></td>
+                <td>AI 销售自动化</td>
+                <td>$3.1B</td>
+                <td>7 年找 PMF · 社区冷启动 · 代理商飞轮</td>
+                <td>Clay_深度研究报告.html</td>
+            </tr>
+            <tr>
+                <td style="color: var(--text-muted);">（待调研）</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="color: var(--text-muted);">（待调研）</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="callout tip" style="margin-top: 20px;">
+        <p><strong>💡 建议调研候选：</strong>Cursor（AI 代码编辑器）· Perplexity（AI 搜索）· v0（AI UI 生成）· Eleven Labs（AI 语音）· Jasper（AI 内容）· Notion AI · Midjourney · Runway</p>
+    </div>
+</div>
+
+<!-- ========== FOOTER ========== -->
+<div class="footer">
+    <p>AI B2B 产品深度调研方法论 v2.1 · 2026 年 3 月</p>
+    <p style="margin-top: 4px; opacity: 0.6;">每调研一个新产品，这套方法论就会变得更强大</p>
+</div>
+
+</div>
+
+<script>
+function saveAsHTML() {
+    const blob = new Blob([document.documentElement.outerHTML], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'AI_B2B_产品调研方法论_v2.1.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+}
+</script>
+
+</body>
+</html>
